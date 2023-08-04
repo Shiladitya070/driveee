@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 type UploadFileProps = {
   username: string;
@@ -11,6 +12,20 @@ const UploadFile = ({ username }: UploadFileProps) => {
 
   const handleDrop = async (event: any) => {
     event.preventDefault();
+    const { files } = event.dataTransfer;
+    const maxSizeInBytes = 1 * 1024 * 1024 * 1024; // 1 GB in bytes
+
+    // Filter out files greater than 1 GB before setting the state
+    const filteredFiles = Array.from(files).filter(
+      (file) => file.size <= maxSizeInBytes
+    );
+
+    if (filteredFiles.length > 0) {
+      setFiles(filteredFiles);
+    } else {
+      // Display an error message or perform some other action if no valid files are found.
+      toast.error("can't upload more than 1GB");
+    }
   };
 
   const handleDragOver = (event: any) => {
