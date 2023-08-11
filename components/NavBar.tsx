@@ -15,11 +15,11 @@ async function NavBar() {
         </Link>
       </div>
       {user ? (
-        <div className="flex items-center">
-          <div className="dropdown dropdown-end">
+        <div className="flex items-center gap-x-2">
             <Link href={"/upload"}>
-              <button className="btn btn-secondary">Upload</button>
+              <button className="btn btn-accent">Upload</button>
             </Link>
+          <div className="dropdown dropdown-end">
             <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
               <div className="w-10 rounded-full">
                 <Image

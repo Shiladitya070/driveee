@@ -1,14 +1,25 @@
 "use client";
 
+import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
 type UploadFileProps = {
-  username: string;
+  userId: string;
 };
 
-const UploadFile = ({ username }: UploadFileProps) => {
+const UploadFile = ({ userId }: UploadFileProps) => {
   const [files, setFiles] = useState<any>([]);
+
+  const uploadAfile = async (file: any) => {
+    const body = { name: file.name, userId, size: file.size, contentType: file.size }
+    console.log("👍👍", body)
+    const { url } = (await axios.post("/api/upload", body)).data
+
+    axios.put(url, file).then(() => {
+      return
+    })
+  }
 
   const handleDrop = async (event: any) => {
     event.preventDefault();
@@ -17,11 +28,22 @@ const UploadFile = ({ username }: UploadFileProps) => {
 
     // Filter out files greater than 1 GB before setting the state
     const filteredFiles = Array.from(files).filter(
-      (file) => file.size <= maxSizeInBytes
+      (file: typeof files) => file.size <= maxSizeInBytes
     );
+
 
     if (filteredFiles.length > 0) {
       setFiles(filteredFiles);
+      toast.success('Lets Upload it')
+      filteredFiles.map((file) => {
+        toast.promise(uploadAfile(file!), {
+          loading: `Uploading... ${file.name}`,
+          success: `Uplaoded ${file.name}`,
+          error: `Falied to Upload ${file.name}`,
+        })
+
+      })
+      setFiles([])
     } else {
       // Display an error message or perform some other action if no valid files are found.
       toast.error("can't upload more than 1GB");
