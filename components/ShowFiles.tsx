@@ -3,10 +3,12 @@ import React, { useEffect, useState } from "react";
 import OneFile from "./OneFile";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { FileRaw, getFile } from "@/types/types";
+import { getFile } from "@/types/types";
+import { useRouter } from "next/navigation";
 
 function ShowFIles() {
   const [files, setFiles] = useState<getFile[]>([]);
+
 
   useEffect(() => {
     axios
@@ -16,15 +18,21 @@ function ShowFIles() {
         setFiles(res.data);
       })
       .catch((error) => {
-        toast("error");
+        console.log(error)
+        toast.error("error");
       });
   }, []);
   return (
     <div className="m-4 rounded-md ">
       <div className="flex flex-wrap gap-2">
-        {files.map((file) => (
-          <OneFile file={file} key={`${file.name}`} />
-        ))}
+        {files.length > 0 ? (
+          files.map((file) => (
+            <OneFile file={file} key={`${file.key}`} />
+          ))
+        ) : (<>
+          <h1>No files</h1>
+        </>)
+        }
       </div>
     </div>
   );

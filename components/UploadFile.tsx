@@ -8,6 +8,7 @@ type UploadFileProps = {
   userId: string;
 };
 
+// TODO: Add progress bar
 const UploadFile = ({ userId }: UploadFileProps) => {
   const [files, setFiles] = useState<any>([]);
 
@@ -37,6 +38,7 @@ const UploadFile = ({ userId }: UploadFileProps) => {
       toast.success('Lets Upload it')
       filteredFiles.map((file) => {
         toast.promise(uploadAfile(file!), {
+          // FIXME:  
           loading: `Uploading... ${file.name}`,
           success: `Uplaoded ${file.name}`,
           error: `Falied to Upload ${file.name}`,

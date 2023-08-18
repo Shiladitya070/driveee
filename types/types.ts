@@ -8,6 +8,7 @@ export type FileRaw = {
 
 export type getFile = {
   name: string;
+  key: string;
   url: string;
   date: Date;
   size: number;
