@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import ProgressBar from "@ramonak/react-progress-bar";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
@@ -13,14 +14,27 @@ const UploadFile = ({ userId }: UploadFileProps) => {
   const [files, setFiles] = useState<any>([]);
 
   const uploadAfile = async (file: any) => {
-    const body = { name: file.name, userId, size: file.size, contentType: file.size }
-    console.log("👍👍", body)
-    const { url } = (await axios.post("/api/upload", body)).data
+    const body = { name: file.name, userId, size: file.size, contentType: file.size };
 
-    axios.put(url, file).then(() => {
-      return
-    })
-  }
+    try {
+      const { url } = (await axios.post("/api/upload", body)).data;
+
+      // Upload logic using Axios with progress tracking
+      const config = {
+        onUploadProgress: (progressEvent: any) => {
+          const progress = (progressEvent.loaded / progressEvent.total) * 100;
+          console.log(`Upload Progress: ${progress.toFixed(2)}%`);
+          // Update your state or perform other actions based on the progress
+        },
+      };
+
+      await axios.put(url, file, config);
+
+      console.log('File uploaded successfully.');
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
+  };
 
   const handleDrop = async (event: any) => {
     event.preventDefault();
@@ -35,14 +49,13 @@ const UploadFile = ({ userId }: UploadFileProps) => {
 
     if (filteredFiles.length > 0) {
       setFiles(filteredFiles);
-      toast.success('Lets Upload it')
       filteredFiles.map((file) => {
-        toast.promise(uploadAfile(file!), {
-          // FIXME:  
-          loading: `Uploading... ${file.name}`,
-          success: `Uplaoded ${file.name}`,
-          error: `Falied to Upload ${file.name}`,
-        })
+        toast((t) => (
+          <span>
+            Uploading... <b>{file.name}</b>
+            <ProgressBar completed={60} />
+          </span>
+        ));
 
       })
       setFiles([])
