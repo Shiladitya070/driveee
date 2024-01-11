@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import ProgressBar from "@ramonak/react-progress-bar";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 
 type UploadFileProps = {
@@ -12,6 +12,10 @@ type UploadFileProps = {
 // TODO: Add progress bar
 const UploadFile = ({ userId }: UploadFileProps) => {
   const [files, setFiles] = useState<any>([]);
+  const [uploadQueue, setuploadQueue] = useState([]);
+  const [prog, setProg] = useState(0);
+
+
 
   const uploadAfile = async (file: any) => {
     const body = { name: file.name, userId, size: file.size, contentType: file.size };
@@ -19,18 +23,21 @@ const UploadFile = ({ userId }: UploadFileProps) => {
     try {
       const { url } = (await axios.post("/api/upload", body)).data;
 
+
       // Upload logic using Axios with progress tracking
       const config = {
         onUploadProgress: (progressEvent: any) => {
           const progress = (progressEvent.loaded / progressEvent.total) * 100;
-          console.log(`Upload Progress: ${progress.toFixed(2)}%`);
-          // Update your state or perform other actions based on the progress
+          setProg(progress);
         },
+
       };
+
 
       await axios.put(url, file, config);
 
       console.log('File uploaded successfully.');
+      setProg(0)
     } catch (error) {
       console.error('Error uploading file:', error);
     }
@@ -50,13 +57,8 @@ const UploadFile = ({ userId }: UploadFileProps) => {
     if (filteredFiles.length > 0) {
       setFiles(filteredFiles);
       filteredFiles.map((file) => {
-        toast((t) => (
-          <span>
-            Uploading... <b>{file.name}</b>
-            <ProgressBar completed={60} />
-          </span>
-        ));
-
+        uploadAfile(file);
+        // setuploadQueue((queue) => [...queue, { name: file.name, key: file }]);
       })
       setFiles([])
     } else {
@@ -68,10 +70,10 @@ const UploadFile = ({ userId }: UploadFileProps) => {
   const handleDragOver = (event: any) => {
     event.preventDefault();
   };
-
+  useEffect(() => { console.log(prog) }, [prog])
   return (
     <div
-      className="m-4 flex w-full items-center justify-center"
+      className="m-4 flex flex-col w-full items-center justify-center"
       onDrop={handleDrop}
       onDragOver={handleDragOver}
     >
@@ -111,6 +113,8 @@ const UploadFile = ({ userId }: UploadFileProps) => {
         </div>
         <input id="dropzone-file" type="file" className="hidden" />
       </label>
+      <ProgressBar className="w-full p-2" completed={prog.toFixed(2)} />
+
     </div>
   );
 };
