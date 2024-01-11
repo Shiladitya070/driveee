@@ -16,7 +16,11 @@ async function getAllFiles(userId: string) {
   });
   const res = (await s3Client.send(command)).Contents;
   const filePromises = res?.map(async (f) => {
-    const file = await fileMaker(f);
+    if (!f.Key) return;
+    if (!f.LastModified) return;
+    if (!f.Size) return;
+    const fileMakerArgument = { Key: f.Key, LastModified: f.LastModified, Size: f.Size }
+    const file = await fileMaker(fileMakerArgument);
     return file;
   });
   const result = await Promise.all(filePromises!);
@@ -24,7 +28,7 @@ async function getAllFiles(userId: string) {
   return result;
 }
 
-const fileMaker = async (f: _Object) => {
+const fileMaker = async (f: { Key: string, LastModified: Date; Size: number }) => {
   const newFile: getFile = {
     name: nameExtractor(f.Key),
     key: f.Key,
@@ -46,9 +50,12 @@ async function getFileurl(key: string) {
   const url = await getSignedUrl(s3Client, command);
   return url;
 }
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const user = await currentUser()
+    if (!user) {
+      return;
+    }
     const files = await getAllFiles(user.id);
     console.log(files)
     if (!files) {
