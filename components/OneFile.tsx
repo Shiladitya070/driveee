@@ -2,15 +2,18 @@
 import React from "react";
 import { getFile } from "@/types/types";
 import { AiFillDelete, AiOutlineCloudDownload } from 'react-icons/ai'
+import ReactPlayer from 'react-player';
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import { useRouter } from "next/navigation";
+import Image from "next/image";
 type oneFileProps = {
   file: getFile;
 };
 
 function OneFile({ file }: oneFileProps) {
-  const router = useRouter()
+
+  const isImage = /\.(jpg|jpeg|png|gif)$/i.test(file.name);
+  const isVideo = /\.(mp4|webm|ogg)$/i.test(file.name);
 
   const deleteFile = () => {
     axios.post(`api/File/`, { Key: file.key }).then((res) => {
@@ -19,8 +22,7 @@ function OneFile({ file }: oneFileProps) {
       window.location.reload()
     }).catch(error => console.log(error))
   }
-
-  return (
+  const justName = (
     <div className="card bg-slate-800 w-96 shadow-xl px-5 py-6">
       <div className="flex items-center gap-2 justify-between">
 
@@ -35,6 +37,33 @@ function OneFile({ file }: oneFileProps) {
           </button>
         </div>
       </div>
+    </div>
+  )
+  if (!isImage && !isVideo) {
+    return justName
+  }
+
+  return (
+    <div className="card bg-slate-800 min-h-[200px] min-w-[200px] w-auto h-fit shadow-xl px-5 py-6">
+      <div className="flex items-center gap-2 justify-between flex-shrink-0">
+
+        {isImage && (
+          <div className="flex-shrink-0">
+            <Image src={file.url} alt={file.name} layout="responsive" width={200} height={200} />
+          </div>
+        )}
+        {isVideo && <ReactPlayer url={file.url} controls width="100%" height="auto" />}
+      </div>
+      <div className="flex mt-3 gap-2 text-sm">
+
+        <a className="btn btn-info btn-outline  w-fit" target="_blank" href={file.url}>
+          <AiOutlineCloudDownload />
+        </a>
+        <button onClick={deleteFile} className="btn btn-outline  btn-error">
+          <AiFillDelete />
+        </button>
+      </div>
+
     </div>
   );
 }
