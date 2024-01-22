@@ -8,7 +8,7 @@ async function NavBar() {
   const user = await currentUser();
 
   return (
-    <div className="navbar bg-primary text-primary-content shadow-xl align-middle">
+    <div className="navbar shadow-xl align-middle border-b border-b-slate-500">
       <div className="flex-1">
         <Link href={"/"} className="btn btn-ghost normal-case text-xl">
           Driveee
@@ -16,9 +16,9 @@ async function NavBar() {
       </div>
       {user ? (
         <div className="flex items-center gap-x-2">
-            <Link href={"/upload"}>
-              <button className="btn btn-accent">Upload</button>
-            </Link>
+          <Link href={"/upload"}>
+            <button className="btn btn-accent">Upload</button>
+          </Link>
           <div className="dropdown dropdown-end">
             <label tabIndex={0} className="btn btn-ghost btn-circle avatar">
               <div className="w-10 rounded-full">

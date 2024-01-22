@@ -5,8 +5,8 @@ import { NextResponse } from "next/server";
 
 async function getUploadUrl(filename: string, userId: string, contentType: string) {
     const command = new PutObjectCommand({
-        Bucket:"mydriveee",
-        Key:`uploads/user/${userId}/${filename}`,
+        Bucket: "mydriveee",
+        Key: `uploads/user/${userId}/${filename}`,
         ContentType: contentType
     })
     const url = await getSignedUrl(s3Client, command)
@@ -14,8 +14,8 @@ async function getUploadUrl(filename: string, userId: string, contentType: strin
 }
 
 export async function POST(req: Request) {
-    const {name,userId, contentType, size} = await req.json()
+    const { name, userId, contentType } = await req.json()
 
-    const url = await getUploadUrl(name,userId, contentType )
-    return NextResponse.json({msg: "Ok", url})
+    const url = await getUploadUrl(name, userId, contentType)
+    return NextResponse.json({ msg: "Ok", url })
 }

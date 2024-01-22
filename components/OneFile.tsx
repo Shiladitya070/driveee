@@ -1,8 +1,6 @@
 "use client";
 import React from "react";
 import { getFile } from "@/types/types";
-import Image from "next/image";
-import Link from "next/link";
 import { AiFillDelete, AiOutlineCloudDownload } from 'react-icons/ai'
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -18,12 +16,12 @@ function OneFile({ file }: oneFileProps) {
     axios.post(`api/File/`, { Key: file.key }).then((res) => {
       console.log("🗑️", res.data)
       toast.success(`Deleted ${file.name}`)
+      window.location.reload()
     }).catch(error => console.log(error))
-    router.refresh()
   }
 
   return (
-    <div className="card w-96 bg-base-100 shadow-xl p-10">
+    <div className="card bg-slate-800 w-96 shadow-xl px-5 py-6">
       <div className="flex items-center gap-2 justify-between">
 
         <h1>{file.name}</h1>
