@@ -44,7 +44,7 @@ function OneFile({ file }: oneFileProps) {
   }
 
   return (
-    <div className="card bg-slate-800 min-h-[200px] min-w-[200px] w-auto h-fit shadow-xl px-5 py-6">
+    <div className="card bg-slate-800 shadow-xl w-auto h-fit px-5 py-6">
       <div className="flex items-center gap-2 justify-between flex-shrink-0">
 
         {isImage && (
@@ -52,7 +52,7 @@ function OneFile({ file }: oneFileProps) {
             <Image src={file.url} alt={file.name} layout="responsive" width={200} height={200} />
           </div>
         )}
-        {isVideo && <ReactPlayer url={file.url} controls width="100%" height="auto" />}
+        {isVideo && <ReactPlayer url={file.url} controls width="50%" height="auto" />}
       </div>
       <div className="flex mt-3 gap-2 text-sm">
 
